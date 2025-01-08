@@ -72,11 +72,15 @@ export default function ProjectView() {
         .from('images')
         .insert([{ project_id: id, url: publicUrl }]);
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error('Database Error:', dbError);
+        throw dbError;
+      }
 
       loadImages();
       toast.success('Image uploaded successfully!');
     } catch (error: any) {
+      console.error('Upload Error:', error);
       toast.error(error.message);
     } finally {
       setUploading(false);
