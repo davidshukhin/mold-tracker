@@ -7,6 +7,8 @@ import ProjectView from './components/ProjectView';
 import ImageView from './components/ImageView';
 import Layout from './components/Layout';
 import { useAuth } from './hooks/useAuth';
+import Floor from './components/Floor';
+import FloorDetail from './components/FloorDetail';
 
 function App() {
   const { session, loading } = useAuth();
@@ -28,6 +30,7 @@ function App() {
           <Route path="/" element={session ? <Projects /> : <Navigate to="/auth" />} />
           <Route path="/project/:id" element={session ? <ProjectView /> : <Navigate to="/auth" />} />
           <Route path="/image/:id" element={session ? <ImageView /> : <Navigate to="/auth" />} />
+          <Route path="/project/:projectId/floor/:floorNumber" element={<FloorDetail />} />
         </Route>
       </Routes>
     </BrowserRouter>

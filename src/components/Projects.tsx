@@ -9,7 +9,7 @@ export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNewProject, setShowNewProject] = useState(false);
-  const [newProject, setNewProject] = useState({ name: '', description: '' });
+  const [newProject, setNewProject] = useState({ name: '', description: '', floors: 1 });
 
   useEffect(() => {
     loadProjects();
@@ -34,15 +34,27 @@ export default function Projects() {
   async function handleCreateProject(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const { data, error } = await supabase
+      const { data: projectData, error: projectError } = await supabase
         .from('projects')
-        .insert([newProject])
-        .select()
+        .insert([{ name: newProject.name, description: newProject.description }])
         .single();
 
-      if (error) throw error;
-      setProjects([data, ...projects]);
-      setNewProject({ name: '', description: '' });
+      if (projectError) throw projectError;
+
+      // Initialize floors
+      const floors = Array.from({ length: newProject.floors }, (_, index) => ({
+        project_id: projectData?.id,
+        name: `Floor ${index + 1}`,
+      }));
+
+      const { error: floorsError } = await supabase
+        .from('floors')
+        .insert(floors);
+
+      if (floorsError) throw floorsError;
+
+      setProjects([projectData, ...projects]);
+      setNewProject({ name: '', description: '', floors: 1 });
       setShowNewProject(false);
       toast.success('Project created successfully!');
     } catch (error: any) {
@@ -95,6 +107,19 @@ export default function Projects() {
                 id="description"
                 value={newProject.description}
                 onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="floors" className="block text-sm font-medium text-gray-700">
+                Number of Floors
+              </label>
+              <input
+                type="number"
+                id="floors"
+                min="1"
+                value={newProject.floors}
+                onChange={(e) => setNewProject({ ...newProject, floors: Number(e.target.value) })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>

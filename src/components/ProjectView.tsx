@@ -4,6 +4,9 @@ import { Camera, Upload, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Project, Image } from '../types';
 import { toast } from 'react-hot-toast';
+import FloorButton from './FloorButton';
+
+
 
 export default function ProjectView() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +30,7 @@ export default function ProjectView() {
         .single();
 
       if (error) throw error;
+      console.log('Project data:', data);
       setProject(data);
     } catch (error: any) {
       toast.error(error.message);
@@ -133,18 +137,8 @@ export default function ProjectView() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {images.map((image) => (
-          <Link
-            key={image.id}
-            to={`/image/${image.id}`}
-            className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden aspect-square"
-          >
-            <img
-              src={image.url}
-              alt="Interior"
-              className="w-full h-full object-cover"
-            />
-          </Link>
+        {Array.from({ length: project.floors }).map((_, floorIndex) => (
+          <FloorButton key={floorIndex} floorNumber={floorIndex + 1} projectId={id} />
         ))}
       </div>
 

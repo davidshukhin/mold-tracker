@@ -4,6 +4,7 @@ export interface Project {
   description: string;
   created_at: string;
   user_id: string;
+  floors: number;
 }
 
 export interface Image {
